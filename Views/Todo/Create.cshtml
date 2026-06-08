@@ -1,0 +1,72 @@
+@model Day2_MvcCore.Models.TodoItem
+@{
+    ViewData["Title"] = "Tạo Công Việc Mới - Task Flow";
+}
+
+<div class="form-container-page animate-fade-in">
+    
+    <div class="form-header-box">
+        <a asp-action="Index" class="btn-back">← Quay lại Dashboard</a>
+        <h1 class="form-page-title">📝 Thêm Công Việc Mới</h1>
+        <p class="form-page-subtitle">Thiết lập công việc mới, chọn mức độ ưu tiên và thời hạn phù hợp</p>
+    </div>
+
+    <div class="glass-card form-card-body">
+        <form asp-action="Create" method="post" class="custom-form">
+            @Html.AntiForgeryToken()
+            
+            <div asp-validation-summary="ModelOnly" class="validation-summary-error"></div>
+
+            @* 1. Tiêu đề *@
+            <div class="form-group-custom">
+                <label asp-for="Title" class="form-label-custom">Tiêu đề công việc <span class="text-danger">*</span></label>
+                <input asp-for="Title" class="form-input-custom" placeholder="Ví dụ: Đọc sách thiết kế hệ thống..." />
+                <span asp-validation-for="Title" class="text-validation-error"></span>
+            </div>
+
+            @* 2. Mô tả *@
+            <div class="form-group-custom">
+                <label asp-for="Description" class="form-label-custom">Mô tả chi tiết</label>
+                <textarea asp-for="Description" rows="4" class="form-input-custom textarea" placeholder="Nhập mô tả cụ thể về các bước cần làm..."></textarea>
+                <span asp-validation-for="Description" class="text-validation-error"></span>
+            </div>
+
+            @* 3. Row chứa Danh mục & Độ ưu tiên *@
+            <div class="form-row-two-columns">
+                <div class="form-group-custom">
+                    <label asp-for="CategoryId" class="form-label-custom">Danh mục dự án</label>
+                    <select asp-for="CategoryId" class="form-input-custom" asp-items="ViewBag.Categories">
+                        <option value="">-- Chọn danh mục --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group-custom">
+                    <label asp-for="Priority" class="form-label-custom">Mức độ ưu tiên</label>
+                    <select asp-for="Priority" class="form-input-custom" asp-items="Html.GetEnumSelectList<Day2_MvcCore.Models.Priority>()">
+                    </select>
+                    <span asp-validation-for="Priority" class="text-validation-error"></span>
+                </div>
+            </div>
+
+            @* 4. Hạn chót *@
+            <div class="form-group-custom">
+                <label asp-for="DueDate" class="form-label-custom">Hạn chót hoàn thành (Due Date)</label>
+                <input asp-for="DueDate" type="datetime-local" class="form-input-custom" />
+                <span asp-validation-for="DueDate" class="text-validation-error"></span>
+            </div>
+
+            @* Nút submit / hủy *@
+            <div class="form-submit-actions">
+                <button type="submit" class="btn-submit-glow">✨ Tạo Công Việc</button>
+                <a asp-action="Index" class="btn-cancel-custom">Hủy bỏ</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

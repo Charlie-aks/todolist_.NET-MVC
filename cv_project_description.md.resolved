@@ -1,0 +1,45 @@
+# 📝 Project Description for your CV (Task Flow Dashboard)
+
+Dưới đây là phần mô tả dự án bằng cả tiếng Anh và tiếng Việt được tối ưu hóa để bạn đưa thẳng vào CV của mình. Phần mô tả này nêu bật các technical keywords (từ khóa công nghệ) mà các nhà tuyển dụng tìm kiếm.
+
+---
+
+## 🇻🇳 Phiên bản Tiếng Việt
+
+### **TASK FLOW – HỆ THỐNG QUẢN LÝ CÔNG VIỆC CÁ NHÂN (PERSONAL PRODUCTIVITY DASHBOARD)**
+* **Công nghệ sử dụng**: ASP.NET Core MVC (net10.0), C#, Entity Framework Core, SQLite Database, LINQ Queries, Custom Glassmorphic CSS.
+* **Vai trò**: Full-stack Developer (Dự án cá nhân).
+* **Mô tả ngắn**: Ứng dụng dashboard cá nhân giúp theo dõi hiệu suất, phân loại và quản lý công việc hàng ngày theo dự án và mức độ ưu tiên.
+* **Các tính năng cốt lõi đã hiện thực**:
+  * **Cơ sở dữ liệu thực tế (EF Core + SQLite)**: Chuyển đổi toàn bộ kiến trúc từ in-memory list sang SQL database thực tế. Tự thiết kế Database Schema gồm các bảng liên kết `TodoItems` và `Categories` (mối quan hệ One-to-Many).
+  * **Bộ phân tích Dashboard trực quan**: Tính toán và hiển thị thời gian thực các chỉ số KPI: Tỷ lệ hoàn thành công việc (Completion Rate), Tổng số tác vụ, Số lượng tác vụ bị trễ hạn (Overdue Tasks).
+  * **Phân tích dữ liệu bằng LINQ**: Nhóm dữ liệu và vẽ biểu đồ thanh (biểu thị mức độ phân bố công việc theo độ ưu tiên và danh mục dự án) tối ưu hóa truy vấn thông qua LINQ.
+  * **Bộ lọc và tìm kiếm động (Search & Filter System)**: Cho phép tìm kiếm toàn văn (full-text search) và lọc chéo đa tiêu chí (danh mục, độ ưu tiên, trạng thái hoàn thành).
+  * **Giao diện Modern Glassmorphism UI**: Thiết kế giao diện hiện đại với hiệu ứng làm mờ kính, các huy hiệu (badges) phân loại màu sắc tự động, hỗ trợ hiển thị responsive mượt mà trên di động.
+  * **Bảo mật**: Áp dụng cơ chế chống giả mạo request (`[ValidateAntiForgeryToken]`) và Model Validation nghiêm ngặt ở cả Client-side và Server-side.
+
+---
+
+## 🇬🇧 English Version (Recommended for CV)
+
+### **TASK FLOW – PERSONAL PRODUCTIVITY & TASK MANAGEMENT DASHBOARD**
+* **Tech Stack**: ASP.NET Core MVC (net10.0), C#, Entity Framework Core, SQLite Database, LINQ, Bootstrap & Custom CSS (Glassmorphic Design).
+* **Role**: Full-stack Developer (Personal Project).
+* **Description**: A high-performance personal productivity board designed to help users track, filter, and analyze daily tasks categorized by projects and priorities.
+* **Key Achievements**:
+  * **Relational Database Design**: Implemented a SQLite database utilizing EF Core Code-First approach, designing a schema with a one-to-many relationship between `Categories` and `TodoItems`.
+  * **Real-time Analytics Dashboard**: Engineered a lightweight metrics engine calculation representing total tasks, completed ratio (progress bar), pending items, and overdue notifications.
+  * **Data Aggregation via LINQ**: Utilized LINQ queries to aggregate task counts by Priority (High/Medium/Low) and Category for visual analytics rendering.
+  * **Multi-criteria Search & Filter**: Developed an interactive panel enabling full-text search and cross-filtering by Category, Priority, and Status.
+  * **Responsive Glassmorphism UI**: Styled a premium dashboard from scratch featuring CSS backdrop filters, color-coded badges, and micro-interactions for a modern feel.
+  * **Security & Validation**: Ensured secure transaction handling by enforcing `[ValidateAntiForgeryToken]` and robust server-side Model Validation.
+
+---
+
+## 💡 Các câu hỏi phỏng vấn thường gặp về dự án này:
+1. **Tại sao bạn chọn SQLite thay vì SQL Server cho dự án này?**
+   * *Trả lời*: SQLite nhỏ gọn, không cần cài đặt server phức tạp, lưu trữ trực tiếp dưới dạng file trong thư mục dự án, rất phù hợp cho các dự án cá nhân, test nhanh hoặc chạy demo offline.
+2. **Làm thế nào bạn tối ưu hóa việc tải dữ liệu liên kết (Category) từ Database?**
+   * *Trả lời*: Em sử dụng Eager Loading thông qua phương thức `.Include(t => t.Category)` của EF Core để nạp thông tin danh mục cùng lúc với công việc trong một câu lệnh SQL duy nhất, tránh lỗi N+1 Query.
+3. **Cơ chế hoạt động của `ModelState.IsValid` và `ValidateAntiForgeryToken` là gì?**
+   * *Trả lời*: `ModelState.IsValid` kiểm tra các ràng buộc dữ liệu (như `[Required]`, `[StringLength]`) được định nghĩa trong Model Class trước khi lưu vào DB. `ValidateAntiForgeryToken` chống lại tấn công CSRF bằng cách đính kèm token bảo mật vào form và đối chiếu token này ở phía server.

@@ -1,0 +1,284 @@
+@model Day2_MvcCore.Models.TodoDashboardViewModel
+
+@{
+    ViewData["Title"] = "Task Flow - Dashboard Quản Lý Công Việc";
+}
+
+<div class="dashboard-container">
+    
+    @* ==========================================
+       HEADER SECTION
+       ========================================== *@
+    <div class="dashboard-header animate-fade-in">
+        <div>
+            <span class="app-badge">🚀 Workspace Personal</span>
+            <h1 class="dashboard-title">Task Flow</h1>
+            <p class="dashboard-subtitle">Quản lý hiệu suất, tối ưu hóa công việc hàng ngày của bạn</p>
+        </div>
+        <div class="header-actions">
+            <a asp-action="Create" class="btn-primary-glow">
+                <span class="btn-icon">⚡</span> Thêm công việc mới
+            </a>
+        </div>
+    </div>
+
+    @* ==========================================
+       STATS GRID SECTION
+       ========================================== *@
+    <div class="stats-grid">
+        <div class="glass-card stat-card">
+            <div class="stat-icon blue">📁</div>
+            <div class="stat-info">
+                <span class="stat-label">Tổng Công Việc</span>
+                <span class="stat-value">@Model.TotalTasks</span>
+            </div>
+        </div>
+        
+        <div class="glass-card stat-card">
+            <div class="stat-icon green">✅</div>
+            <div class="stat-info">
+                <span class="stat-label">Đã Hoàn Thành</span>
+                <span class="stat-value">@Model.CompletedTasks</span>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: @Model.CompletionRate%"></div>
+                    <span class="progress-text">@Model.CompletionRate%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card stat-card">
+            <div class="stat-icon yellow">⏳</div>
+            <div class="stat-info">
+                <span class="stat-label">Đang Thực Hiện</span>
+                <span class="stat-value">@Model.PendingTasks</span>
+            </div>
+        </div>
+
+        <div class="glass-card stat-card @(Model.OverdueTasks > 0 ? "warning-glow" : "")">
+            <div class="stat-icon red">🚨</div>
+            <div class="stat-info">
+                <span class="stat-label">Trễ Hạn</span>
+                <span class="stat-value">@Model.OverdueTasks</span>
+            </div>
+        </div>
+    </div>
+
+    @* ==========================================
+       FILTER & SEARCH CONTROL PANEL
+       ========================================== *@
+    <div class="glass-card filter-card animate-fade-in">
+        <form method="get" asp-action="Index" class="filter-form">
+            <div class="filter-grid">
+                <div class="filter-item search-box">
+                    <label class="filter-label">Tìm kiếm</label>
+                    <div class="input-with-icon">
+                        <span class="input-icon">🔍</span>
+                        <input type="text" name="search" value="@Model.Search" class="form-control-custom" placeholder="Tên công việc hoặc mô tả..." />
+                    </div>
+                </div>
+
+                <div class="filter-item">
+                    <label class="filter-label">Danh mục</label>
+                    <select name="categoryId" class="form-control-custom">
+                        <option value="">Tất cả danh mục</option>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <option value="@cat.Id" Selected="@(Model.CategoryId == cat.Id ? "selected" : null)">
+                                @cat.Icon @cat.Name
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label class="filter-label">Độ ưu tiên</label>
+                    <select name="priority" class="form-control-custom">
+                        <option value="">Tất cả độ ưu tiên</option>
+                        <option value="High" Selected="@(Model.Priority == Day2_MvcCore.Models.Priority.High ? "selected" : null)">🔴 Cao</option>
+                        <option value="Medium" Selected="@(Model.Priority == Day2_MvcCore.Models.Priority.Medium ? "selected" : null)">🟡 Trung bình</option>
+                        <option value="Low" Selected="@(Model.Priority == Day2_MvcCore.Models.Priority.Low ? "selected" : null)">🔵 Thấp</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label class="filter-label">Trạng thái</label>
+                    <select name="status" class="form-control-custom">
+                        <option value="all" Selected="@(Model.Status == "all" ? "selected" : null)">Tất cả trạng thái</option>
+                        <option value="pending" Selected="@(Model.Status == "pending" ? "selected" : null)">⏳ Đang thực hiện</option>
+                        <option value="completed" Selected="@(Model.Status == "completed" ? "selected" : null)">✅ Đã hoàn thành</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-search">Áp dụng bộ lọc</button>
+                <a asp-action="Index" class="btn-reset">Đặt lại</a>
+            </div>
+        </form>
+    </div>
+
+    @* ==========================================
+       MAIN DASHBOARD CONTENT (2 COLUMNS)
+       ========================================== *@
+    <div class="dashboard-main-layout">
+        
+        @* LEFT COLUMN: TASK LIST (70% width) *@
+        <div class="task-section">
+            <div class="section-header">
+                <h2>📋 Danh sách công việc (@Model.TodoItems.Count)</h2>
+            </div>
+
+            <div class="task-list-container">
+                @if (!Model.TodoItems.Any())
+                {
+                    <div class="empty-dashboard-state glass-card">
+                        <div class="empty-icon">☕</div>
+                        <h3>Không tìm thấy công việc nào</h3>
+                        <p>Hãy thử thay đổi điều kiện lọc hoặc thêm mới công việc.</p>
+                        <a asp-action="Create" class="btn-primary-glow btn-sm mt-3">Thêm Task Ngay</a>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var item in Model.TodoItems)
+                    {
+                        var isOverdue = !item.IsCompleted && item.DueDate.HasValue && item.DueDate.Value < DateTime.Now;
+                        
+                        <div class="task-card glass-card @(item.IsCompleted ? "completed" : "") @(isOverdue ? "overdue" : "")">
+                            
+                            @* Action: Toggle Checkbox *@
+                            <form asp-action="Toggle" asp-controller="Todo" method="post" class="task-checkbox-form">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button type="submit" class="custom-checkbox @(item.IsCompleted ? "checked" : "")">
+                                    @(item.IsCompleted ? "✓" : "")
+                                </button>
+                            </form>
+
+                            @* Task Metadata & Title *@
+                            <div class="task-body">
+                                <div class="task-meta-top">
+                                    @if (item.Category != null)
+                                    {
+                                        <span class="category-badge" style="background-color: @(item.Category.Color)18; color: @item.Category.Color; border: 1px solid @(item.Category.Color)40;">
+                                            @item.Category.Icon @item.Category.Name
+                                        </span>
+                                    }
+                                    
+                                    @* Priority Badge *@
+                                    @switch (item.Priority)
+                                    {
+                                        case Day2_MvcCore.Models.Priority.High:
+                                            <span class="priority-badge high">🔴 Cao</span>
+                                            break;
+                                        case Day2_MvcCore.Models.Priority.Medium:
+                                            <span class="priority-badge medium">🟡 T.Bình</span>
+                                            break;
+                                        case Day2_MvcCore.Models.Priority.Low:
+                                            <span class="priority-badge low">🔵 Thấp</span>
+                                            break;
+                                    }
+                                </div>
+
+                                <h3 class="task-title">@item.Title</h3>
+                                <p class="task-description">@item.Description</p>
+
+                                <div class="task-meta-bottom">
+                                    <span class="meta-date">
+                                        📅 Tạo lúc: @item.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+                                    @if (item.DueDate.HasValue)
+                                    {
+                                        <span class="meta-due @(isOverdue ? "text-danger-glow" : "")">
+                                            ⏰ Hạn chót: @item.DueDate.Value.ToString("dd/MM/yyyy HH:mm")
+                                            @(isOverdue ? " (Trễ hạn!)" : "")
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+
+                            @* Task Operations *@
+                            <div class="task-actions">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn-edit-task" title="Chỉnh sửa">✏️</a>
+                                <form asp-action="Delete" asp-controller="Todo" method="post" class="inline-form" onsubmit="return confirm('Bạn có chắc chắn muốn xóa công việc này?')">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn-delete-task" title="Xóa">✕</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        @* RIGHT COLUMN: ANALYTICS & BREAKDOWN (30% width) *@
+        <div class="analytics-section">
+            <div class="section-header">
+                <h2>📊 Phân Tích & Báo Cáo</h2>
+            </div>
+
+            @* PRIORITY BREAKDOWN CARD *@
+            <div class="glass-card analytics-card">
+                <h3>Độ Ưu Tiên Công Việc</h3>
+                <div class="breakdown-list">
+                    @foreach (var entry in Model.TasksByPriority)
+                    {
+                        var percentage = Model.TotalTasks > 0 ? (double)entry.Value / Model.TotalTasks * 100 : 0;
+                        var colorClass = entry.Key == Day2_MvcCore.Models.Priority.High ? "red" : 
+                                         entry.Key == Day2_MvcCore.Models.Priority.Medium ? "yellow" : "blue";
+                        var label = entry.Key == Day2_MvcCore.Models.Priority.High ? "Cao" : 
+                                    entry.Key == Day2_MvcCore.Models.Priority.Medium ? "Trung bình" : "Thấp";
+
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">
+                                <span>@label</span>
+                                <span class="breakdown-count">@entry.Value việc (@Math.Round(percentage, 0)%)</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill @colorClass" style="width: @percentage%"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* CATEGORY BREAKDOWN CARD *@
+            <div class="glass-card analytics-card mt-4">
+                <h3>Thống Kê Theo Danh Mục</h3>
+                <div class="breakdown-list">
+                    @foreach (var entry in Model.TasksByCategory)
+                    {
+                        var percentage = Model.TotalTasks > 0 ? (double)entry.Value / Model.TotalTasks * 100 : 0;
+                        var catObj = Model.Categories.FirstOrDefault(c => c.Name == entry.Key);
+                        var hexColor = catObj?.Color ?? "#6366f1";
+
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">
+                                <span>@(catObj?.Icon ?? "📁") @entry.Key</span>
+                                <span class="breakdown-count">@entry.Value việc (@Math.Round(percentage, 0)%)</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: @percentage%; background-color: @hexColor;"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* EDUCATIONAL CORNER (Recruiter Impression) *@
+            <div class="glass-card education-card mt-4">
+                <div class="edu-header">🎓 Tech Stack & Design</div>
+                <div class="edu-body">
+                    <ul>
+                        <li><strong>Architecture:</strong> ASP.NET Core MVC (net10.0)</li>
+                        <li><strong>Database:</strong> SQLite Local Database</li>
+                        <li><strong>ORM:</strong> Entity Framework Core (Code-First)</li>
+                        <li><strong>Features:</strong> Relational Database (1-Many), LINQ Analytics, Model Validation, AntiForgeryToken.</li>
+                        <li><strong>Design:</strong> Glassmorphism dashboard layout, custom CSS system.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
