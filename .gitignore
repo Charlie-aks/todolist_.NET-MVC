@@ -1,0 +1,28 @@
+# Build and Publish folders
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio / VS Code temp files
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.clw
+*.ncb
+*.aps
+
+# SQLite temp files
+*.db-journal
+*.db-shm
+*.db-wal
